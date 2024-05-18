@@ -11,6 +11,8 @@ class SSong(SSongAdd):
     id: int
 
 
-class SAlbumType(BaseModel):
-    id: int
+class SAlbumTypeAdd(BaseModel):
     type: Optional[str] = None
+
+class SAlbumType(SAlbumTypeAdd):
+    id: int

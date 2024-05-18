@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from database import create_tables,delete_tables
-from router import router as songs_router
+from database.connection import create_tables,delete_tables
+from routers.album import router as albums_type_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -10,6 +10,6 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(songs_router)
+app.include_router(albums_type_router)
 
 

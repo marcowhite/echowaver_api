@@ -1,10 +1,9 @@
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import func
-from datetime import datetime
 from typing_extensions import Optional
 
-from base import Model
-
+from . import Model
+from .mixins.dated import DatedMixin
 
 class AlbumTypeTable(Model):
     __tablename__ = 'album_types'
@@ -13,17 +12,15 @@ class AlbumTypeTable(Model):
     type: Mapped[str]
 
 
-class AlbumTable(Model):
+class AlbumTable(Model, DatedMixin):
     __tablename__ = 'albums'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = relationship(foreign_keys='users.id')
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
 
     name: Mapped[str]
     description: Mapped[Optional[str]]
     public: Mapped[bool] = mapped_column(default=False)
-    type: Mapped[int] = relationship(foreign_keys='album_types.id')
+    type: Mapped[int] = mapped_column(ForeignKey('album_types.id'))
 
-    # songs_order: JSONB
-
-    created_at: Mapped[datetime] = mapped_column(default=func.now())
+    user = relationship("UserTable")

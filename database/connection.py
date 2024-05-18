@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from models.base import Model
+from .models import Model
 
 # engine = create_async_engine(
 #     "sqlite+aiosqlite:///songs.db"
@@ -11,6 +11,7 @@ engine = create_async_engine(
 )
 
 new_session = async_sessionmaker(engine, expire_on_commit=False)
+
 
 
 async def create_tables():

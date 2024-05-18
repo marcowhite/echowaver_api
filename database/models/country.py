@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from base import Model
+from . import Model
 
 
 class CountryTable(Model):

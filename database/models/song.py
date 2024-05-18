@@ -1,16 +1,16 @@
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import func
-from datetime import datetime
 from typing_extensions import Optional
 
-from base import Model
+from . import Model
+from .mixins.dated import DatedMixin
 
 
-class SongTable(Model):
+class SongTable(Model, DatedMixin):
     __tablename__ = 'songs'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = relationship(foreign_keys='users.id')
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     path: Mapped[str]
 
     name: Mapped[str]
@@ -20,12 +20,25 @@ class SongTable(Model):
     background: Mapped[str]
     cover: Mapped[str]
 
-    created_at: Mapped[datetime] = mapped_column(default=func.now())
+    user = relationship("UserTable", back_populates="songs")
+    listenings = relationship("ListeningTable")
+    tags = relationship("TagsTable", back_populates='song')
 
-
-class ListeningsTable(Model):
+class ListeningTable(Model, DatedMixin):
     __tablename__ = 'listenings'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = relationship(foreign_keys='users.id')
-    origin_country_id: Mapped[int] = relationship(foreign_keys='countries.id')
+    song_id: Mapped[int] = mapped_column(ForeignKey('songs.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    origin_country_id: Mapped[int] = mapped_column(ForeignKey('countries.id'))
+    meta: Mapped[Optional[str]]
+
+    song = relationship("SongTable",back_populates='listenings')
+
+class TagsTable(Model):
+    __tablename__ = 'tags'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    song_id: Mapped[int] = mapped_column(ForeignKey('songs.id'))
+    tag: Mapped[str]
+
+    song = relationship("SongTable", back_populates='tags')
