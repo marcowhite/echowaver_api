@@ -8,3 +8,4 @@ class CountryTable(Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    code: Mapped[str]

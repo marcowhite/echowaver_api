@@ -20,6 +20,6 @@ async def add_album_type(
 
 
 @router.get("/types")
-async def get_song() -> list[SAlbumType]:
+async def get_album_types() -> list[SAlbumType]:
     album_types = await AlbumTypeRepository.find_all()
     return album_types

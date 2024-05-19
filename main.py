@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from database.connection import create_tables,delete_tables
 from routers.album import router as albums_type_router
+from routers.country import router as country_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -11,5 +12,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(albums_type_router)
-
-
+app.include_router(country_router)

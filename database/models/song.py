@@ -21,7 +21,7 @@ class SongTable(Model, DatedMixin):
     cover: Mapped[str]
 
     user = relationship("UserTable", back_populates="songs")
-    listenings = relationship("ListeningTable")
+    listenings = relationship("ListeningTable", back_populates='song')
     tags = relationship("TagsTable", back_populates='song')
 
 class ListeningTable(Model, DatedMixin):
@@ -36,7 +36,7 @@ class ListeningTable(Model, DatedMixin):
     song = relationship("SongTable",back_populates='listenings')
 
 class TagsTable(Model):
-    __tablename__ = 'tags'
+    __tablename__ = 'songs_tags'
     id: Mapped[int] = mapped_column(primary_key=True)
     song_id: Mapped[int] = mapped_column(ForeignKey('songs.id'))
     tag: Mapped[str]
