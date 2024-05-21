@@ -1,21 +1,37 @@
-from sqlalchemy import ForeignKey, Column, Integer, Table
+from sqlalchemy import ForeignKey, Column, Integer, Table, String, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Optional
 
 from . import Model
 from .mixins.dated import DatedMixin
 
+from fastapi_users.db import SQLAlchemyBaseUserTable
 
-class UserTable(Model, DatedMixin):
-    __tablename__ = 'users'
+
+class UserRoleTable(Model):
+    __tablename__ = 'user_role'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str]
-    password: Mapped[str]
-    display_name: Mapped[str]
-    public: Mapped[bool] = mapped_column(default=False)
-    type: Mapped[int] = mapped_column(ForeignKey('user_types.id'))
+    name: Mapped[str]
+    permissions: Mapped[Optional[JSON]]
 
+
+class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
+    __tablename__ = 'user'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    email: Mapped[str] = mapped_column(String(length=320), unique=True, index=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(length=1024), nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
+    is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
+
+    is_public: Mapped[bool] = mapped_column(default=True, nullable=False)
+
+    role: Mapped[int] = mapped_column(ForeignKey('user_role.id'))
+
+    display_name: Mapped[str]
     first_name: Mapped[Optional[str]]
     last_name: Mapped[Optional[str]]
     city: Mapped[Optional[str]]
@@ -24,10 +40,7 @@ class UserTable(Model, DatedMixin):
     url: Mapped[Optional[str]]
     avatar: Mapped[Optional[str]]
     background: Mapped[Optional[str]]
-
-    songs = relationship("SongTable", back_populates="user")
-    albums = relationship("AlbumTable", back_populates="user")
-
+    spotlight: Mapped[Optional[JSON]]
     # followers = relationship(
     #     'UserTable', lambda: user_following,
     #     primaryjoin=lambda: UserTable.id == user_following.c.user_id,
@@ -35,12 +48,6 @@ class UserTable(Model, DatedMixin):
     #     backref='followers'
     # )
 
-
-class UserTypeTable(Model):
-    __tablename__ = 'user_types'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    type: Mapped[str]
 
 user_following = Table(
     'user_following', Model.metadata,

@@ -14,3 +14,9 @@ class SSongAdd(BaseModel):
 class SSong(SSongAdd):
     id: int
 
+class SSongTagsAdd(BaseModel):
+    song_id: int
+    tag: str
+
+class SSongsTags(SSongTagsAdd):
+    id: int

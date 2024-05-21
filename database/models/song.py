@@ -7,38 +7,33 @@ from .mixins.dated import DatedMixin
 
 
 class SongTable(Model, DatedMixin):
-    __tablename__ = 'songs'
+    __tablename__ = 'song'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     path: Mapped[str]
 
+    is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     name: Mapped[str]
     description: Mapped[Optional[str]]
     genre: Mapped[Optional[str]]
-    public: Mapped[bool] = mapped_column(default=False)
-    background: Mapped[str]
-    cover: Mapped[str]
+    cover: Mapped[Optional[str]]
 
-    user = relationship("UserTable", back_populates="songs")
-    listenings = relationship("ListeningTable", back_populates='song')
-    tags = relationship("TagsTable", back_populates='song')
+    background: Mapped[Optional[str]]
 
-class ListeningTable(Model, DatedMixin):
-    __tablename__ = 'listenings'
+
+class SongListenTable(Model, DatedMixin):
+    __tablename__ = 'song_listen'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    song_id: Mapped[int] = mapped_column(ForeignKey('songs.id'))
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    origin_country_id: Mapped[int] = mapped_column(ForeignKey('countries.id'))
+    song_id: Mapped[int] = mapped_column(ForeignKey('song.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
+    origin_country_id: Mapped[int] = mapped_column(ForeignKey('country.id'))
     meta: Mapped[Optional[str]]
 
-    song = relationship("SongTable",back_populates='listenings')
 
-class TagsTable(Model):
-    __tablename__ = 'songs_tags'
+class SongTagTable(Model):
+    __tablename__ = 'song_tag'
     id: Mapped[int] = mapped_column(primary_key=True)
-    song_id: Mapped[int] = mapped_column(ForeignKey('songs.id'))
+    song_id: Mapped[int] = mapped_column(ForeignKey('song.id'))
     tag: Mapped[str]
-
-    song = relationship("SongTable", back_populates='tags')

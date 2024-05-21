@@ -4,7 +4,7 @@ from . import Model
 
 
 class CountryTable(Model):
-    __tablename__ = 'countries'
+    __tablename__ = 'country'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
