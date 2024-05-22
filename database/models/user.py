@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Column, Integer, Table, String, JSON
+from sqlalchemy import ForeignKey, Column, Integer, Table, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Optional
 
@@ -13,7 +13,7 @@ class UserRoleTable(Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    permissions: Mapped[Optional[JSON]]
+    permissions: Mapped[Optional[str]]
 
 
 class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
@@ -29,7 +29,7 @@ class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
 
     is_public: Mapped[bool] = mapped_column(default=True, nullable=False)
 
-    role: Mapped[int] = mapped_column(ForeignKey('user_role.id'))
+    role_id: Mapped[int] = mapped_column(ForeignKey('user_role.id'))
 
     display_name: Mapped[str]
     first_name: Mapped[Optional[str]]
@@ -40,7 +40,7 @@ class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
     url: Mapped[Optional[str]]
     avatar: Mapped[Optional[str]]
     background: Mapped[Optional[str]]
-    spotlight: Mapped[Optional[JSON]]
+    spotlight: Mapped[Optional[str]]
     # followers = relationship(
     #     'UserTable', lambda: user_following,
     #     primaryjoin=lambda: UserTable.id == user_following.c.user_id,

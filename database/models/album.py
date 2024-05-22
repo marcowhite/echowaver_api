@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, JSON
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Optional
 
@@ -22,4 +22,4 @@ class AlbumTable(Model, DatedMixin):
     description: Mapped[Optional[str]]
     is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     type: Mapped[int] = mapped_column(ForeignKey('album_type.id'))
-    song_order: Mapped[Optional[JSON]]
+    song_order: Mapped[Optional[str]]

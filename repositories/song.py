@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
 from database.connection import new_session
-from database.models.song import TagsTable
+from database.models.song import SongTagTable
 from schemas.song import SSongTagsAdd, SSongsTags
 
 from fastapi.encoders import jsonable_encoder

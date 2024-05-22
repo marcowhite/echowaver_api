@@ -3,6 +3,13 @@ from typing import Optional
 from fastapi_users import schemas
 
 
+class SUserRoleAdd(BaseModel):
+    name: str
+    permissions: Optional[str]
+
+class SUserRole(SUserRoleAdd):
+    id: int
+
 class SUserCreate(schemas.BaseUserCreate):
     email: str
     password: str
@@ -23,7 +30,7 @@ class SUser(SUserCreate):
     is_verified: bool = False
     is_public: bool = True
 
-    role: int = 0
+    role: int = 1
 
     city: Optional[str]
     bio: Optional[str]
@@ -46,7 +53,7 @@ class SUserRead(schemas.BaseUser[int]):
     is_verified: bool
     is_public: bool
 
-    role: int = 0
+    role_id: int
 
     city: Optional[str]
     bio: Optional[str]
