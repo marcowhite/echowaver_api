@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from typing_extensions import Annotated
 
-from repositories.album import AlbumTypeRepository
+from database.models import UserTable
+from repositories.country import CountryRepository
+from routers.user import fastapi_users
 from schemas.country import SCountryAdd, SCountry
 
 router = APIRouter(
@@ -10,16 +12,22 @@ router = APIRouter(
     tags=['Countries']
 )
 
+current_user = fastapi_users.current_user()
+
 
 @router.post("")
 async def add_country(
-        country: Annotated[SCountryAdd, Depends()]
+        country: Annotated[SCountryAdd, Depends()],
+        user: UserTable = Depends(current_user)
 ):
-    country_id = await AlbumTypeRepository.add_one(country)
-    return {'response': True, 'country_id': country_id}
+    if user.is_superuser:
+        country_id = await CountryRepository.add_one(country)
+        return {'response': True, 'country_id': country_id}
+    else:
+        raise HTTPException(status_code=403, detail="Unauthorized")
 
 
 @router.get("")
 async def get_countries() -> list[SCountry]:
-    album_types = await AlbumTypeRepository.find_all()
-    return album_types
+    countries = await CountryRepository.find_all()
+    return countries

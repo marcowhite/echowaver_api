@@ -5,7 +5,7 @@ from fastapi_users import schemas
 
 class SUserRoleAdd(BaseModel):
     name: str
-    permissions: Optional[str]
+    permissions: Optional[str] = None
 
 class SUserRole(SUserRoleAdd):
     id: int

@@ -11,13 +11,13 @@ class SongTable(Model, DatedMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
-    path: Mapped[str]
+    audio_file: Mapped[str]
 
     is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     name: Mapped[str]
     description: Mapped[Optional[str]]
     genre: Mapped[Optional[str]]
-    cover: Mapped[Optional[str]]
+    cover_file: Mapped[Optional[str]]
 
     background: Mapped[Optional[str]]
 

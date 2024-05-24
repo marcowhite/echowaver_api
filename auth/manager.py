@@ -1,11 +1,8 @@
 from typing import Optional
-
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, IntegerIDMixin, exceptions, models, schemas
-
 from database.connection import get_user_db
 from database.models.user import UserTable as User
-
 from config import SECRET
 
 
@@ -17,20 +14,20 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
         print(f"User {user.id} has registered.")
 
     async def on_after_forgot_password(
-        self, user: User, token: str, request: Optional[Request] = None
+            self, user: User, token: str, request: Optional[Request] = None
     ):
         print(f"User {user.id} has forgot their password. Reset token: {token}")
 
     async def on_after_request_verify(
-        self, user: User, token: str, request: Optional[Request] = None
+            self, user: User, token: str, request: Optional[Request] = None
     ):
         print(f"Verification requested for user {user.id}. Verification token: {token}")
 
     async def create(
-        self,
-        user_create: schemas.UC,
-        safe: bool = False,
-        request: Optional[Request] = None,
+            self,
+            user_create: schemas.UC,
+            safe: bool = False,
+            request: Optional[Request] = None,
     ) -> models.UP:
         await self.validate_password(user_create.password, user_create)
 

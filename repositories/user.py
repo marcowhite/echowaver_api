@@ -9,22 +9,22 @@ from fastapi.encoders import jsonable_encoder
 
 class UserRoleRepository:
     @classmethod
-    async def add_one(cls, data: UserRoleTable) -> int:
+    async def add_one(cls, data: SUserRoleAdd) -> int:
         async with new_session() as session:
-            album_type_dict = data.model_dump()
-            print(album_type_dict)
-            album_type = UserRoleTable(**album_type_dict)
-            session.add(album_type)
+            user_role_dict = data.model_dump()
+            print(user_role_dict)
+            user_role = UserRoleTable(**user_role_dict)
+            session.add(user_role)
             await session.flush()
             await session.commit()
-            return album_type.id
+            return user_role.id
 
     @classmethod
     async def find_all(cls) -> list[SUserRole]:
         async with new_session() as session:
             query = select(UserRoleTable)
             result = await session.execute(query)
-            album_type_models = result.scalars().all()
-            album_type_shemas = [SUserRole.model_validate(jsonable_encoder(album_type_model)) for album_type_model in
-                                 album_type_models]
-            return album_type_shemas
+            user_role_models = result.scalars().all()
+            user_role_shemas = [SUserRole.model_validate(jsonable_encoder(user_role_model)) for user_role_model in
+                                user_role_models]
+            return user_role_shemas

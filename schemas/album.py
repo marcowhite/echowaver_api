@@ -6,3 +6,16 @@ class SAlbumTypeAdd(BaseModel):
 
 class SAlbumType(SAlbumTypeAdd):
     id: int
+
+class SAlbumAdd(BaseModel):
+
+
+    name: str
+    description: Optional[str] = None
+    is_public: bool = False
+    album_type_id: int = 1
+    song_order: Optional[str] = None
+
+class SAlbum(SAlbumAdd):
+    user_id: int
+    id: int

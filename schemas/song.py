@@ -2,21 +2,31 @@ from pydantic import BaseModel
 from typing import Optional
 
 class SSongAdd(BaseModel):
-    path: str
-
     name: str
     description: Optional[str] = None
     genre: Optional[str] = None
-    public: bool = False
+
     background: Optional[str] = None
-    cover: Optional[str] = None
+
+    is_public: bool = False
 
 class SSong(SSongAdd):
+    cover_file: Optional[str] = None
+    audio_file: Optional[str] = None
+    user_id: int
     id: int
 
-class SSongTagsAdd(BaseModel):
+class SSongTagAdd(BaseModel):
     song_id: int
     tag: str
 
-class SSongsTags(SSongTagsAdd):
+class SSongTag(SSongTagAdd):
     id: int
+
+
+
+# class SongTable(Model, DatedMixin):
+#     __tablename__ = 'song'
+#
+#     id: Mapped[int] = mapped_column(primary_key=True)
+

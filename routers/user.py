@@ -1,6 +1,6 @@
 from fastapi_users import fastapi_users, FastAPIUsers
 
-from fastapi import FastAPI, Request, status, Depends, APIRouter
+from fastapi import FastAPI, Request, status, Depends, APIRouter, HTTPException
 
 from auth.auth import auth_backend
 from database.models import UserTable
@@ -20,22 +20,29 @@ router = APIRouter(
     tags=['User']
 )
 
-@router.post("/role")
-async def set_user_role(
-        album_type: Annotated[SUserRoleAdd, Depends()]
-):
-    album_type_id = await UserRoleRepository.add_one(album_type)
-    return {'response': True, 'user_role_id': album_type_id}
-
-@router.get("/role")
-async def get_user_roles() -> list[SUserRole]:
-    album_types = await UserRoleRepository.find_all()
-    return album_types
 
 fastapi_users = FastAPIUsers[UserTable, int](
     get_user_manager,
     [auth_backend],
 )
+
+current_user = fastapi_users.current_user()
+
+@router.post("/role")
+async def set_user_role(
+        album_type: Annotated[SUserRoleAdd, Depends()],
+        user: UserTable = Depends(current_user)
+    ):
+    if user.is_superuser:
+        user_role_id = await UserRoleRepository.add_one(album_type)
+        return {'response': True, 'user_role_id': user_role_id}
+    else:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
+@router.get("/role")
+async def get_user_roles() -> list[SUserRole]:
+    user_roles = await UserRoleRepository.find_all()
+    return user_roles
 
 auth_jwt_router = APIRouter(
     prefix="/auth/jwt",
@@ -50,13 +57,5 @@ auth_router = APIRouter(
 
 auth_router.include_router(fastapi_users.get_register_router(SUserRead, SUserCreate))
 
-current_user = fastapi_users.current_user()
-
-@router.get("/protected-route")
-def protected_route(user: UserTable = Depends(current_user)):
-    return f"Hello, {user.display_name}"
-
-
-@router.get("/unprotected-route")
-def unprotected_route():
-    return f"Hello, anonym"
+router.include_router(auth_router)
+router.include_router(auth_jwt_router)

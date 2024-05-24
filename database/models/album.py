@@ -21,5 +21,5 @@ class AlbumTable(Model, DatedMixin):
     name: Mapped[str]
     description: Mapped[Optional[str]]
     is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
-    type: Mapped[int] = mapped_column(ForeignKey('album_type.id'))
+    album_type_id: Mapped[int] = mapped_column(ForeignKey('album_type.id'))
     song_order: Mapped[Optional[str]]
