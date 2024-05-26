@@ -79,11 +79,11 @@ class SongTagRepository:
             return song_tag.id
 
     @classmethod
-    async def find_all(cls) -> list[SSongTag]:
+    async def find_by_song_id(cls, song_id: int) -> list[SSongTag]:
         async with new_session() as session:
-            query = select(SongTagTable)
+            query = select(SongTagTable).filter(SongTagTable.song_id == song_id)
             result = await session.execute(query)
             song_tag_models = result.scalars().all()
             song_tag_shemas = [SSongTag.model_validate(jsonable_encoder(song_tag_model)) for song_tag_model in
-                               song_tag_models]
+                           song_tag_models]
             return song_tag_shemas

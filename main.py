@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from database.connection import create_tables
 from database.defaults import insert_default_rows
@@ -11,7 +12,6 @@ from routers.song import router as song_router
 from routers.upload import router as upload_router
 from routers.user import router as user_router
 from routers.interaction import router as interactions_router
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +24,19 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     lifespan=lifespan,
     title="Echowaver API"
+)
+
+origins = [
+    "http://localhost",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization"],
 )
 
 app.include_router(albums_type_router)

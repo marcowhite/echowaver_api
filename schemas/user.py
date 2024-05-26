@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from fastapi_users import schemas
 
@@ -11,15 +11,30 @@ class SUserRole(SUserRoleAdd):
     id: int
 
 class SUserCreate(schemas.BaseUserCreate):
-    email: str
+    email: EmailStr
     password: str
     display_name: str
     first_name: Optional[str]
     last_name: Optional[str]
 
 
-class UserUpdate(schemas.BaseUserUpdate):
-    pass
+class SUserUpdate(schemas.BaseUserUpdate):
+    email: str
+    display_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    is_active: bool
+    is_superuser: bool
+    is_verified: bool
+    is_public: bool
+
+    city: Optional[str]
+    bio: Optional[str]
+
+    url: Optional[str]
+    avatar: Optional[str]
+    background: Optional[str]
+    spotlight: Optional[str]
 
 
 class SUser(SUserCreate):

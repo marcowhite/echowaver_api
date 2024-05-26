@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, status, Depends, APIRouter, HTTPException
 from auth.auth import auth_backend
 from database.models import UserTable
 from auth.manager import get_user_manager
-from schemas.user import SUserRead, SUserCreate
+from schemas.user import SUserRead, SUserCreate, SUserUpdate
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -84,6 +84,7 @@ auth_router = APIRouter(
 )
 
 auth_router.include_router(fastapi_users.get_register_router(SUserRead, SUserCreate))
+auth_router.include_router(fastapi_users.get_users_router(SUserRead, SUserUpdate))
 
 router.include_router(auth_router)
 router.include_router(auth_jwt_router)

@@ -61,7 +61,7 @@ async def delete_album_by_id(
 
 
 @router.get("/user/{user_id}")
-async def get_songs_by_user_id(
+async def get_albums_by_user_id(
         user_id: int,
         user: UserTable = Depends(current_user)
 ) -> list[SAlbum]:

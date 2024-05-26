@@ -22,11 +22,3 @@ class SSongTagAdd(BaseModel):
 
 class SSongTag(SSongTagAdd):
     id: int
-
-
-
-# class SongTable(Model, DatedMixin):
-#     __tablename__ = 'song'
-#
-#     id: Mapped[int] = mapped_column(primary_key=True)
-

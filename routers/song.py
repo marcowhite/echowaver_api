@@ -74,13 +74,14 @@ async def get_songs_by_user_id(
         songs = list(filter(lambda x: x.is_public == True, songs))
     return songs
 
+
 @router.get("")
 async def get_songs(user: UserTable = Depends(current_user)):
     songs = await SongRepository.find_all()
     user_songs = list(filter(lambda x: x.user_id == user.id, songs))
     if not user.is_superuser:
         public_songs = list(filter(lambda x: x.is_public == True, songs))
-        if len(public_songs)>0: user_songs.append(public_songs)
+        if len(public_songs) > 0: user_songs.append(public_songs)
     return user_songs
 
 
@@ -89,14 +90,14 @@ async def add_song_tag(
         song_tag: Annotated[SSongTagAdd, Depends()],
         user: UserTable = Depends(current_user)
 ):
-    song = await get_song_by_id(id, user)
+    song = await get_song_by_id(song_tag.song_id, user)
     if song.user_id == user.id:
         song_tag_id = await SongTagRepository.add_one(song_tag)
         return {'response': True, 'song_tag_id': song_tag_id}
     raise HTTPException(status_code=403)
 
 
-@router.get("/tag")
-async def get_song_tags(user: UserTable = Depends(current_user)) -> list[SSongTag]:
-    album_types = await SongTagRepository.find_all()
-    return album_types
+@router.get("/tag/{id}")
+async def get_song_tags(song_id: int, user: UserTable = Depends(current_user)) -> list[SSongTag]:
+    song_tags = await SongTagRepository.find_by_song_id(song_id)
+    return song_tags

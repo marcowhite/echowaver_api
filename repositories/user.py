@@ -3,7 +3,6 @@ from sqlalchemy import select
 from database.connection import new_session
 from database.models.user import UserRoleTable
 from database.models.user import UserFollowTable
-
 from schemas.user import SUserRoleAdd, SUserRole
 
 from fastapi.encoders import jsonable_encoder
