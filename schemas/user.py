@@ -20,7 +20,7 @@ class SUserCreate(schemas.BaseUserCreate):
 
 class SUserUpdate(schemas.BaseUserUpdate):
     email: str
-    display_name: str
+    display_name: EmailStr
     first_name: Optional[str]
     last_name: Optional[str]
     is_active: bool
@@ -58,7 +58,7 @@ class SUser(SUserCreate):
 class SUserRead(schemas.BaseUser[int]):
     id: int
 
-    email: str
+    email: EmailStr
     display_name: str
     first_name: Optional[str]
     last_name: Optional[str]
