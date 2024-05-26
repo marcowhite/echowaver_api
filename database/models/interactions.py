@@ -4,28 +4,28 @@ from . import Model
 from .mixins.dated import DatedMixin
 
 
-class LikedSongTable(Model, DatedMixin):
+class SongLikeTable(Model, DatedMixin):
     __tablename__ = "song_like"
 
     liker_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
     liked_id: Mapped[int] = mapped_column(ForeignKey('song.id'), primary_key=True)
 
 
-class RepostedSongTable(Model, DatedMixin):
+class SongRepostTable(Model, DatedMixin):
     __tablename__ = "song_repost"
 
     reposter_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
     reposted_id: Mapped[int] = mapped_column(ForeignKey('song.id'), primary_key=True)
 
 
-class LikedAlbumTable(Model, DatedMixin):
+class AlbumLikeTable(Model, DatedMixin):
     __tablename__ = "album_like"
 
     liker_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
     liked_id: Mapped[int] = mapped_column(ForeignKey('album.id'), primary_key=True)
 
 
-class RepostedAlbumTable(Model, DatedMixin):
+class AlbumRepostTable(Model, DatedMixin):
     __tablename__ = "album_repost"
 
     reposter_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)

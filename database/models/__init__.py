@@ -7,5 +7,5 @@ from .user import UserTable, UserRoleTable
 from .country import CountryTable
 from .song import SongTable, SongTagTable,SongListenTable
 from .album import AlbumTable, AlbumTypeTable
-from .interactions import LikedSongTable,RepostedSongTable
-from .interactions import LikedAlbumTable,RepostedAlbumTable
+from .interactions import SongLikeTable,SongRepostTable
+from .interactions import AlbumLikeTable,AlbumRepostTable

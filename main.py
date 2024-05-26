@@ -10,6 +10,7 @@ from routers.country import router as country_router
 from routers.song import router as song_router
 from routers.upload import router as upload_router
 from routers.user import router as user_router
+from routers.interaction import router as interactions_router
 
 
 @asynccontextmanager
@@ -30,3 +31,4 @@ app.include_router(country_router)
 app.include_router(song_router)
 app.include_router(user_router)
 app.include_router(upload_router)
+app.include_router(interactions_router)

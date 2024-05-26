@@ -38,7 +38,7 @@ image_types = ['jpg', 'jpeg', 'png']
 @router.post("/upload/image")
 async def upload_image(file: UploadFile = File(...), user: UserTable = Depends(current_user)):
     if file.filename.split(".")[1] not in image_types:
-        raise HTTPException(status_code=415, detail="Unsupported Media Type")
+        raise HTTPException(status_code=415, detail="This image is Unsupported Media Type")
     try:
 
         with open(file.filename, 'wb') as f:
@@ -66,7 +66,7 @@ audio_types = ['wav', 'mp3', 'aac', 'aiff']
 @router.post("/upload/music")
 async def upload_audio(file: UploadFile = File(...), user: UserTable = Depends(current_user)):
     if file.filename.split('.')[1] not in audio_types:
-        raise HTTPException(status_code=415, detail="Unsupported Media Type")
+        raise HTTPException(status_code=415, detail="This audio is Unsupported Media Type")
     try:
         hashed_file_name = await _encrypt_string(file.filename)
         with open(hashed_file_name, 'wb') as f:
