@@ -8,8 +8,6 @@ class SAlbumType(SAlbumTypeAdd):
     id: int
 
 class SAlbumAdd(BaseModel):
-
-
     name: str
     description: Optional[str] = None
     is_public: bool = False

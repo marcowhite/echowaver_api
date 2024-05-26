@@ -1,6 +1,8 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing_extensions import Optional
+from typing_extensions import Optional, Any
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import JSONB
 
 from . import Model
 from .mixins.dated import DatedMixin
@@ -22,4 +24,4 @@ class AlbumTable(Model, DatedMixin):
     description: Mapped[Optional[str]]
     is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     album_type_id: Mapped[int] = mapped_column(ForeignKey('album_type.id'))
-    song_order: Mapped[Optional[str]]
+    song_order: Mapped[Optional[JSONB]] = mapped_column(type_=JSONB)

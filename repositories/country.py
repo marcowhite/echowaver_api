@@ -20,6 +20,15 @@ class CountryRepository:
             return country.id
 
     @classmethod
+    async def find_by_id(cls, id: int) -> SCountry:
+        async with new_session() as session:
+            query = select(CountryTable).filter(CountryTable.id == id)
+            result = await session.execute(query)
+            country_model = result.scalars().first()
+            country_shema = SCountry.model_validate(jsonable_encoder(country_model))
+            return country_shema
+
+    @classmethod
     async def find_all(cls) -> list[SCountry]:
         async with new_session() as session:
             query = select(CountryTable)

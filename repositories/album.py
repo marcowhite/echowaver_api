@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from database.connection import new_session
 
@@ -9,6 +9,7 @@ from database.models.album import AlbumTable
 from schemas.album import SAlbumAdd, SAlbum
 
 from fastapi.encoders import jsonable_encoder
+
 
 class AlbumRepository:
     @classmethod
@@ -24,14 +25,44 @@ class AlbumRepository:
             return album.id
 
     @classmethod
+    async def delete_by_id(cls, id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(AlbumTable).filter(AlbumTable.id == id)
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
+
+    @classmethod
     async def find_all(cls) -> list[SAlbum]:
         async with new_session() as session:
             query = select(AlbumTable)
             result = await session.execute(query)
             album_models = result.scalars().all()
             album_shemas = [SAlbum.model_validate(jsonable_encoder(album_model)) for album_model in
-                                 album_models]
+                            album_models]
             return album_shemas
+
+    @classmethod
+    async def find_all_by_user_id(cls, user_id: int) -> list[SAlbum]:
+        async with new_session() as session:
+            query = select(AlbumTable).filter(AlbumTable.user_id == user_id)
+            result = await session.execute(query)
+            album_models = result.scalars().all()
+            album_shemas = [SAlbum.model_validate(jsonable_encoder(album_model)) for album_model in
+                           album_models]
+            return album_shemas
+
+    @classmethod
+    async def find_by_id(cls, id: int) -> SAlbum:
+        async with new_session() as session:
+            query = select(AlbumTable).filter(AlbumTable.id == id)
+            result = await session.execute(query)
+            album_model = result.scalars().first()
+            album_schema = SAlbum.model_validate(jsonable_encoder(album_model))
+            return album_schema
+
 
 class AlbumTypeRepository:
     @classmethod
@@ -54,3 +85,11 @@ class AlbumTypeRepository:
             album_type_shemas = [SAlbumType.model_validate(jsonable_encoder(album_type_model)) for album_type_model in
                                  album_type_models]
             return album_type_shemas
+    @classmethod
+    async def find_by_id(cls, id: int) -> SAlbumType:
+        async with new_session() as session:
+            query = select(AlbumTypeTable).filter(AlbumTypeTable.id == id)
+            result = await session.execute(query)
+            album_type_model = result.scalars().first()
+            album_type_schema = SAlbumType.model_validate(jsonable_encoder(album_type_model))
+            return album_type_schema

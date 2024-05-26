@@ -9,7 +9,7 @@ from routers.user import fastapi_users
 from schemas.song import SSongTagAdd, SSongTag, SSong, SSongAdd
 
 router = APIRouter(
-    prefix='/songs',
+    prefix='/song',
     tags=['Songs']
 )
 
@@ -84,7 +84,7 @@ async def get_songs(user: UserTable = Depends(current_user)):
     return user_songs
 
 
-@router.post("/tags")
+@router.post("/tag")
 async def add_song_tag(
         song_tag: Annotated[SSongTagAdd, Depends()],
         user: UserTable = Depends(current_user)
@@ -96,7 +96,7 @@ async def add_song_tag(
     raise HTTPException(status_code=403)
 
 
-@router.get("/tags")
-async def get_song_tags() -> list[SSongTag]:
+@router.get("/tag")
+async def get_song_tags(user: UserTable = Depends(current_user)) -> list[SSongTag]:
     album_types = await SongTagRepository.find_all()
     return album_types

@@ -1,4 +1,5 @@
 from sqlalchemy import ForeignKey
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Optional
 
@@ -29,7 +30,8 @@ class SongListenTable(Model, DatedMixin):
     song_id: Mapped[int] = mapped_column(ForeignKey('song.id'))
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
     origin_country_id: Mapped[int] = mapped_column(ForeignKey('country.id'))
-    meta: Mapped[Optional[str]]
+    meta: Mapped[Optional[JSONB]] = mapped_column(type_=JSONB)
+
 
 
 class SongTagTable(Model):

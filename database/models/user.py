@@ -1,4 +1,5 @@
 from sqlalchemy import ForeignKey, Column, Integer, Table, String
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Optional
 
@@ -40,7 +41,7 @@ class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
     url: Mapped[Optional[str]]
     avatar: Mapped[Optional[str]]
     background: Mapped[Optional[str]]
-    spotlight: Mapped[Optional[str]]
+    spotlight: Mapped[Optional[JSONB]] = mapped_column(type_=JSONB)
     # followers = relationship(
     #     'UserTable', lambda: user_following,
     #     primaryjoin=lambda: UserTable.id == user_following.c.user_id,

@@ -28,3 +28,11 @@ class UserRoleRepository:
             user_role_shemas = [SUserRole.model_validate(jsonable_encoder(user_role_model)) for user_role_model in
                                 user_role_models]
             return user_role_shemas
+    @classmethod
+    async def find_by_id(cls, id: int) -> SUserRole:
+        async with new_session() as session:
+            query = select(UserRoleTable).filter(UserRoleTable.id == id)
+            result = await session.execute(query)
+            user_role_model = result.scalars().first()
+            user_role_schema = SUserRole.model_validate(jsonable_encoder(user_role_model))
+            return user_role_schema

@@ -40,8 +40,13 @@ async def set_user_role(
         raise HTTPException(status_code=403, detail="Unauthorized")
 
 @router.get("/role")
-async def get_user_roles() -> list[SUserRole]:
+async def get_user_roles(user: UserTable = Depends(current_user)) -> list[SUserRole]:
     user_roles = await UserRoleRepository.find_all()
+    return user_roles
+
+@router.get("/role/{id}")
+async def get_user_role_by_id(id: int,user: UserTable = Depends(current_user)) -> SUserRole:
+    user_roles = await UserRoleRepository.find_by_id(id)
     return user_roles
 
 auth_jwt_router = APIRouter(

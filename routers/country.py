@@ -8,7 +8,7 @@ from routers.user import fastapi_users
 from schemas.country import SCountryAdd, SCountry
 
 router = APIRouter(
-    prefix='/countries',
+    prefix='/country',
     tags=['Countries']
 )
 
@@ -28,6 +28,13 @@ async def add_country(
 
 
 @router.get("")
-async def get_countries() -> list[SCountry]:
+async def get_countries(
+        user: UserTable = Depends(current_user)) -> list[SCountry]:
     countries = await CountryRepository.find_all()
     return countries
+
+
+@router.get("/{id}")
+async def get_country_by_id(id: int,user: UserTable = Depends(current_user)) -> SCountry:
+    country = await CountryRepository.find_by_id(id)
+    return country
