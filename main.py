@@ -9,9 +9,11 @@ from database.defaults import insert_default_rows
 from routers.album import router as albums_type_router
 from routers.country import router as country_router
 from routers.song import router as song_router
-from routers.upload import router as upload_router
+from routers.file import router as file_router
 from routers.user import router as user_router
 from routers.interaction import router as interactions_router
+from routers.stream import router as websocket_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,5 +45,5 @@ app.include_router(albums_type_router)
 app.include_router(country_router)
 app.include_router(song_router)
 app.include_router(user_router)
-app.include_router(upload_router)
+app.include_router(file_router)
 app.include_router(interactions_router)

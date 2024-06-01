@@ -4,7 +4,7 @@ from typing_extensions import Annotated
 
 from database.models import UserTable
 from repositories.song import SongTagRepository, SongRepository
-from routers.upload import upload_audio, upload_image
+from routers.file import upload_audio, upload_image
 from routers.user import fastapi_users
 from schemas.song import SSongTagAdd, SSongTag, SSong, SSongAdd
 
@@ -76,13 +76,13 @@ async def get_songs_by_user_id(
 
 
 @router.get("")
-async def get_songs(user: UserTable = Depends(current_user)):
+async def get_songs(user: UserTable = Depends(current_user)) -> list[SSong]:
     songs = await SongRepository.find_all()
-    user_songs = list(filter(lambda x: x.user_id == user.id, songs))
-    if not user.is_superuser:
-        public_songs = list(filter(lambda x: x.is_public == True, songs))
-        if len(public_songs) > 0: user_songs.append(public_songs)
-    return user_songs
+    # user_songs = list(filter(lambda x: x.user_id == user.id, songs))
+    # if not user.is_superuser:
+    #     public_songs = list(filter(lambda x: x.is_public == True, songs))
+    #     if len(public_songs) > 0: user_songs.append(public_songs)
+    return songs
 
 
 @router.post("/tag")

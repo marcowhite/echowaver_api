@@ -13,10 +13,13 @@ import ffmpeg
 from database.models import UserTable
 from routers.user import fastapi_users
 
+from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
+
 
 async def _encrypt_string(string):
     string = string + str(random())
-    hashed_string = hashlib.shake_256(string.encode('utf-8')).hexdigest(16)
+    hashed_string = hashlib.shake_256(string.encode('utf-8')).hexdigest(32)
     return hashed_string
 
 
@@ -63,7 +66,7 @@ async def upload_image(file: UploadFile = File(...), user: UserTable = Depends(c
 audio_types = ['wav', 'mp3', 'aac', 'aiff']
 
 
-@router.post("/upload/music")
+@router.post("/upload/audio")
 async def upload_audio(file: UploadFile = File(...), user: UserTable = Depends(current_user)):
     if file.filename.split('.')[1] not in audio_types:
         raise HTTPException(status_code=415, detail="This audio is Unsupported Media Type")
@@ -88,3 +91,18 @@ async def upload_audio(file: UploadFile = File(...), user: UserTable = Depends(c
 
     return {"responce": "ok",
             "message": f"{file_path.split("/")[-1]}"}
+
+
+@router.get("/image/{image_file}", response_class=FileResponse)
+async def get_image_file(image_file: str):
+    path = IMAGE_PATH + image_file
+    return FileResponse(path=path)
+
+
+@router.get("/audio/{audio_file}")
+async def get_audio_file_stream(audio_file: str):
+    def iterfile():
+        with open(MUSIC_PATH + audio_file , mode="rb") as file_like:  #
+            yield from file_like  #
+
+    return StreamingResponse(iterfile(), media_type="audio/mp3")

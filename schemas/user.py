@@ -14,8 +14,6 @@ class SUserCreate(schemas.BaseUserCreate):
     email: EmailStr
     password: str
     display_name: str
-    first_name: Optional[str]
-    last_name: Optional[str]
 
 
 class SUserUpdate(schemas.BaseUserUpdate):
@@ -45,6 +43,9 @@ class SUser(SUserCreate):
     is_verified: bool = False
     is_public: bool = True
 
+    first_name: Optional[str]
+    last_name: Optional[str]
+
     role: int = 1
 
     city: Optional[str]
@@ -58,7 +59,7 @@ class SUser(SUserCreate):
 class SUserRead(schemas.BaseUser[int]):
     id: int
 
-    email: EmailStr
+    email: str
     display_name: str
     first_name: Optional[str]
     last_name: Optional[str]
