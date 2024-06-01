@@ -23,6 +23,7 @@ async def _encrypt_string(string):
     return hashed_string
 
 
+
 async def _create_file_path(file_name, directory):
     hashed_file_name = await _encrypt_string(file_name)
     return directory + '/' + hashed_file_name + "." + file_name.split(".")[1]

@@ -47,3 +47,4 @@ app.include_router(song_router)
 app.include_router(user_router)
 app.include_router(file_router)
 app.include_router(interactions_router)
+

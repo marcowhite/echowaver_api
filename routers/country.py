@@ -26,18 +26,6 @@ async def add_country(
     else:
         raise HTTPException(status_code=403, detail="Unauthorized")
 
-# @router.post("/multiple/")
-# async def add_countries(
-#         countries: json,
-#         user: UserTable = Depends(current_user)
-# ):
-#     if user.is_superuser:
-#         country_ids = await CountryRepository.add_multiple(countries)
-#         response = {'response': True, 'country_ids': [id for id in country_ids]}
-#         return response
-#     else:
-#         raise HTTPException(status_code=403, detail="Unauthorized")
-
 @router.get("")
 async def get_countries(
         user: UserTable = Depends(current_user)) -> list[SCountry]:

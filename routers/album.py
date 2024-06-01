@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from fastapi import Depends
 from typing_extensions import Annotated
 
 from database.models import UserTable
 from repositories.album import AlbumTypeRepository, AlbumRepository
+from routers.file import upload_image
 from routers.user import fastapi_users
 from schemas.album import SAlbumTypeAdd, SAlbumType, SAlbumAdd, SAlbum
 
@@ -18,9 +19,14 @@ current_user = fastapi_users.current_user()
 @router.post("")
 async def add_album(
         album: Annotated[SAlbumAdd, Depends()],
-        user: UserTable = Depends(current_user)
+        image_file: UploadFile = File(...),
+        user: UserTable = Depends(current_user),
 ):
-    album_id = await AlbumRepository.add_one(album, user_id=user.id)
+    try:
+        image_responce = await upload_image(image_file)
+    except Exception as e:
+        raise e
+    album_id = await AlbumRepository.add_one(album,cover_file=image_responce['message'], user_id=user.id)
     return {'response': True, 'album_id': album_id}
 
 
@@ -36,7 +42,7 @@ async def get_albums(user: UserTable = Depends(current_user)) -> list[SAlbum]:
 async def get_album_by_id(
         id: int,
         user: UserTable = Depends(current_user)
-):
+)-> SAlbum:
     album = await AlbumRepository.find_by_id(id)
     if album.is_public == True:
         return album
@@ -51,7 +57,7 @@ async def update_album(
         id: int,
         album: Annotated[SAlbumAdd, Depends()],
         user: UserTable = Depends(current_user)
-):
+) -> SAlbum:
     selected_album = await AlbumRepository.find_by_id(id)
     if not selected_album:
         raise HTTPException(status_code=404, detail="Album not found")

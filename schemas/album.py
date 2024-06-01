@@ -15,5 +15,6 @@ class SAlbumAdd(BaseModel):
     song_order: Optional[str] = None
 
 class SAlbum(SAlbumAdd):
+    cover_file: Optional[str] = None
     user_id: int
     id: int

@@ -13,10 +13,11 @@ from fastapi.encoders import jsonable_encoder
 
 class AlbumRepository:
     @classmethod
-    async def add_one(cls, data: SAlbumAdd, user_id: int) -> int:
+    async def add_one(cls, data: SAlbumAdd,cover_file: str, user_id: int) -> int:
         async with new_session() as session:
             album_dict = data.model_dump()
             album_dict.update(user_id=user_id)
+            album_dict.update(cover_file=cover_file)
             print(album_dict)
             album = AlbumTable(**album_dict)
             session.add(album)

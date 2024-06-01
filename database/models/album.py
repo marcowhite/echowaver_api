@@ -25,3 +25,4 @@ class AlbumTable(Model, DatedMixin):
     is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     album_type_id: Mapped[int] = mapped_column(ForeignKey('album_type.id'))
     song_order: Mapped[Optional[JSONB]] = mapped_column(type_=JSONB)
+    cover_file: Mapped[Optional[str]]
