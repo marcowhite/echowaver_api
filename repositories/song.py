@@ -25,7 +25,6 @@ class SongRepository:
             await session.commit()
             return song.id
 
-
     @classmethod
     async def delete_by_id(cls, id: int):
         async with new_session() as session:
@@ -36,6 +35,20 @@ class SongRepository:
             await session.commit()
             return result
 
+    @classmethod
+    async def update_by_id(cls, id: int, data: SSongAdd) -> SSong:
+        async with new_session() as session:
+            async with session.begin():
+                query = select(SongTable).filter(SongTable.id == id).with_for_update()
+                result = await session.execute(query)
+                song = result.scalar_one_or_none()
+
+                song_dict = data.model_dump()
+                for key, value in song_dict.items():
+                    setattr(song, key, value)
+
+                await session.commit()
+                return song
     @classmethod
     async def find_all(cls) -> list[SSong]:
         async with new_session() as session:
@@ -85,5 +98,5 @@ class SongTagRepository:
             result = await session.execute(query)
             song_tag_models = result.scalars().all()
             song_tag_shemas = [SSongTag.model_validate(jsonable_encoder(song_tag_model)) for song_tag_model in
-                           song_tag_models]
+                               song_tag_models]
             return song_tag_shemas

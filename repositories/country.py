@@ -18,20 +18,6 @@ class CountryRepository:
             await session.flush()
             await session.commit()
             return country.id
-    # @classmethod
-    # async def add_multiple(cls, data: list[SCountryAdd]) -> list[int]:
-    #     async with new_session() as session:
-    #         ids = []
-    #         for country in data:
-    #             country_dict = country.model_dump()
-    #             print(country_dict)
-    #             country = CountryTable(**country_dict)
-    #             id = session.add(country)
-    #             ids.append(id)
-    #         await session.flush()
-    #         await session.commit()
-    #         return ids
-
     @classmethod
     async def find_by_id(cls, id: int) -> SCountry:
         async with new_session() as session:

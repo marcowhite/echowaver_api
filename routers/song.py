@@ -51,6 +51,25 @@ async def get_song_by_id(
             return []
 
 
+@router.patch('/{id}')
+async def update_song(
+        id: int,
+        song: Annotated[SSongAdd, Depends()],
+        user: UserTable = Depends(current_user)
+):
+    selected_song = await SongRepository.find_by_id(id)
+    if not selected_song:
+        raise HTTPException(status_code=404, detail="Song not found")
+
+    if user.id != selected_song.user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this song")
+
+    updated_song = await SongRepository.update_by_id(id, song)
+    if not updated_song:
+        raise HTTPException(status_code=500, detail="Failed to update song")
+
+    return updated_song
+
 @router.delete("/{id}")
 async def delete_song_by_id(
         id: int,
@@ -78,11 +97,12 @@ async def get_songs_by_user_id(
 @router.get("")
 async def get_songs(user: UserTable = Depends(current_user)) -> list[SSong]:
     songs = await SongRepository.find_all()
-    # user_songs = list(filter(lambda x: x.user_id == user.id, songs))
-    # if not user.is_superuser:
-    #     public_songs = list(filter(lambda x: x.is_public == True, songs))
-    #     if len(public_songs) > 0: user_songs.append(public_songs)
-    return songs
+    user_songs = {song.id: song for song in songs if song.user_id == user.id}
+
+    if not user.is_superuser:
+        public_songs = {song.id: song for song in songs if song.is_public}
+        user_songs.update(public_songs)
+    return list(user_songs.values())
 
 
 @router.post("/tag")

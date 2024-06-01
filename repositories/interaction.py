@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete, and_
 
 from database.connection import new_session
 
@@ -28,6 +28,34 @@ class LikeRepository:
             await session.flush()
             await session.commit()
             return album_like
+
+    @classmethod
+    async def unlike_song(cls, liker_id: int, liked_id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(SongLikeTable).where(
+                and_(
+                SongLikeTable.liker_id == liker_id,
+                SongLikeTable.liked_id == liked_id)
+            )
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
+
+    @classmethod
+    async def unlike_album(cls, liker_id: int, liked_id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(AlbumLikeTable).where(
+                and_(
+                AlbumLikeTable.liker_id == liker_id,
+                AlbumLikeTable.liked_id == liked_id)
+            )
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
 
     @classmethod
     async def get_song_likes_by_id(cls, id: int):
@@ -81,6 +109,33 @@ class RepostRepository:
             await session.commit()
             return album_repost
 
+    @classmethod
+    async def unrepost_song(cls, reposter_id: int, reposted_id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(SongRepostTable).where(
+                and_(
+                SongRepostTable.reposter_id == reposter_id,
+                SongRepostTable.reposted_id == reposted_id)
+            )
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
+
+    @classmethod
+    async def unrepost_album(cls, reposter_id: int, reposted_id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(AlbumLikeTable).where(
+                and_(
+                AlbumRepostTable.reposter_id == reposter_id,
+                AlbumRepostTable.reposted_id == reposted_id)
+            )
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
     @classmethod
     async def get_song_reposts_by_id(cls, id: int):
         async with new_session() as session:

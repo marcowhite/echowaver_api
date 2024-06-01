@@ -46,6 +46,25 @@ async def get_album_by_id(
         else:
             raise HTTPException(status_code=403, detail="Unauthorized")
 
+@router.patch('/{id}')
+async def update_album(
+        id: int,
+        album: Annotated[SAlbumAdd, Depends()],
+        user: UserTable = Depends(current_user)
+):
+    selected_album = await AlbumRepository.find_by_id(id)
+    if not selected_album:
+        raise HTTPException(status_code=404, detail="Album not found")
+
+    if user.id != selected_album.user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this album")
+
+    updated_album = await AlbumRepository.update_by_id(id, album)
+    if not updated_album:
+        raise HTTPException(status_code=500, detail="Failed to update album")
+
+    return updated_album
+
 
 @router.delete("/{id}")
 async def delete_album_by_id(

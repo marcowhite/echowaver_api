@@ -98,8 +98,7 @@ async def get_image_file(image_file: str):
     path = IMAGE_PATH + image_file
     return FileResponse(path=path)
 
-
-@router.get("/audio/{audio_file}")
+@router.get("/audio/{audio_file}", response_class=StreamingResponse)
 async def get_audio_file_stream(audio_file: str):
     def iterfile():
         with open(MUSIC_PATH + audio_file , mode="rb") as file_like:  #

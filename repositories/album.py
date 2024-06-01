@@ -51,7 +51,7 @@ class AlbumRepository:
             result = await session.execute(query)
             album_models = result.scalars().all()
             album_shemas = [SAlbum.model_validate(jsonable_encoder(album_model)) for album_model in
-                           album_models]
+                            album_models]
             return album_shemas
 
     @classmethod
@@ -62,6 +62,21 @@ class AlbumRepository:
             album_model = result.scalars().first()
             album_schema = SAlbum.model_validate(jsonable_encoder(album_model))
             return album_schema
+
+    @classmethod
+    async def update_by_id(cls, id: int, data: SAlbumAdd) -> SAlbum:
+        async with new_session() as session:
+            async with session.begin():
+                query = select(AlbumTable).filter(AlbumTable.id == id).with_for_update()
+                result = await session.execute(query)
+                album = result.scalar_one_or_none()
+
+                album_dict = data.model_dump()
+                for key, value in album_dict.items():
+                    setattr(album, key, value)
+
+                await session.commit()
+                return album
 
 
 class AlbumTypeRepository:
@@ -85,6 +100,7 @@ class AlbumTypeRepository:
             album_type_shemas = [SAlbumType.model_validate(jsonable_encoder(album_type_model)) for album_type_model in
                                  album_type_models]
             return album_type_shemas
+
     @classmethod
     async def find_by_id(cls, id: int) -> SAlbumType:
         async with new_session() as session:
