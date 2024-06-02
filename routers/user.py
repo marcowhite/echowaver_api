@@ -11,7 +11,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from typing_extensions import Annotated
 
-from repositories.user import UserRoleRepository, UserFollowRepository
+from repositories.user import UserRoleRepository, UserFollowRepository, UserProfileRepository
 from schemas.user import SUserRoleAdd, SUserRole
 
 router = APIRouter(
@@ -47,6 +47,10 @@ async def follow_user_by_id(id: int, user: UserTable = Depends(current_user)):
         result = await UserFollowRepository.add_one(user_id=user.id, following_id=id)
         return result
 
+@router.get("/profile/{id}")
+async def get_user_profile(id: int, user: UserTable = Depends(current_user)):
+    user_profile = await UserProfileRepository.find_by_id(id)
+    return user_profile
 
 @router.get("/followers/{id}")
 async def get_user_followers(id: int, user: UserTable = Depends(current_user)):

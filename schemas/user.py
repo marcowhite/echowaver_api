@@ -78,3 +78,19 @@ class SUserRead(schemas.BaseUser[int]):
     avatar: Optional[str]
     background: Optional[str]
     spotlight: Optional[str]
+
+class SUserProfile(BaseModel):
+    id: int
+
+    display_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    is_public: bool
+
+    city: Optional[str]
+    bio: Optional[str]
+
+    url: Optional[str]
+    avatar: Optional[str]
+    background: Optional[str]
+    spotlight: Optional[str]

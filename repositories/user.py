@@ -1,11 +1,21 @@
 from sqlalchemy import select
 
 from database.connection import new_session
-from database.models.user import UserRoleTable
+from database.models.user import UserRoleTable, UserTable
 from database.models.user import UserFollowTable
-from schemas.user import SUserRoleAdd, SUserRole
+from schemas.user import SUserRoleAdd, SUserRole, SUserProfile
 
 from fastapi.encoders import jsonable_encoder
+
+class UserProfileRepository:
+    @classmethod
+    async def find_by_id(cls, id: int) -> SUserProfile:
+        async with new_session() as session:
+            query = select(UserTable).filter(UserTable.id == id)
+            result = await session.execute(query)
+            user_profile_model = result.scalars().first()
+            user_profile_schema = SUserProfile.model_validate(jsonable_encoder(user_profile_model))
+            return user_profile_schema
 
 
 class UserRoleRepository:
