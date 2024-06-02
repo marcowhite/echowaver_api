@@ -3,10 +3,10 @@ from fastapi import Depends
 from typing_extensions import Annotated
 
 from database.models import UserTable
-from repositories.song import SongTagRepository, SongRepository
+from repositories.song import SongTagRepository, SongRepository, SongListenRepository
 from routers.file import upload_audio, upload_image
 from routers.user import fastapi_users
-from schemas.song import SSongTagAdd, SSongTag, SSong, SSongAdd
+from schemas.song import SSongTagAdd, SSongTag, SSong, SSongAdd, SSongListenAdd, SSongListen
 
 router = APIRouter(
     prefix='/song',
@@ -121,3 +121,24 @@ async def add_song_tag(
 async def get_song_tags(song_id: int, user: UserTable = Depends(current_user)) -> list[SSongTag]:
     song_tags = await SongTagRepository.find_by_song_id(song_id)
     return song_tags
+
+
+@router.post("/listen")
+async def add_song_listen(
+        song_listen: Annotated[SSongListenAdd, Depends()],
+        user: UserTable = Depends(current_user)
+):
+
+        song_listen_id = await SongListenRepository.add_one(song_listen)
+        return {'response': True, 'song_tag_id': song_listen_id}
+
+
+
+@router.get("/listen/{id}")
+async def get_song_listens(song_id: int, user: UserTable = Depends(current_user)) -> list[SSongListen]:
+    song = await get_song_by_id(song_id, user)
+    if song.user_id == user.id:
+        song_listens = await SongListenRepository.find_by_song_id(song_id)
+        return song_listens
+    else:
+        raise HTTPException(status_code=403)

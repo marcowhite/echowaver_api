@@ -1,8 +1,8 @@
 from sqlalchemy import select, delete
 
 from database.connection import new_session
-from database.models.song import SongTagTable
-from schemas.song import SSongTagAdd, SSongTag
+from database.models.song import SongTagTable, SongListenTable
+from schemas.song import SSongTagAdd, SSongTag, SSongListenAdd, SSongListen
 
 from database.models.song import SongTable
 from schemas.song import SSongAdd, SSong
@@ -100,3 +100,27 @@ class SongTagRepository:
             song_tag_shemas = [SSongTag.model_validate(jsonable_encoder(song_tag_model)) for song_tag_model in
                                song_tag_models]
             return song_tag_shemas
+
+
+class SongListenRepository:
+    @classmethod
+    async def add_one(cls, data: SSongListenAdd, user_id: int) -> int:
+        async with new_session() as session:
+            song_listen_dict = data.model_dump()
+            song_listen_dict.update(user_id=user_id)
+            print(song_listen_dict)
+            song_listen = SongListenTable(**song_listen_dict)
+            session.add(song_listen)
+            await session.flush()
+            await session.commit()
+            return song_listen.id
+
+    @classmethod
+    async def find_by_song_id(cls, song_id: int) -> list[SSongListen]:
+        async with new_session() as session:
+            query = select(SongListenTable).filter(SongListenTable.song_id == song_id)
+            result = await session.execute(query)
+            song_listen_models = result.scalars().all()
+            song_listen_shemas = [SSongListen.model_validate(jsonable_encoder(song_listen_model)) for song_listen_model in
+                               song_listen_models]
+            return song_listen_shemas
