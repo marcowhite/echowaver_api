@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from fastapi_users import schemas
 
 
@@ -7,8 +7,10 @@ class SUserRoleAdd(BaseModel):
     name: str
     permissions: Optional[str] = None
 
+
 class SUserRole(SUserRoleAdd):
     id: int
+
 
 class SUserCreate(schemas.BaseUserCreate):
     email: EmailStr
@@ -17,8 +19,8 @@ class SUserCreate(schemas.BaseUserCreate):
 
 
 class SUserUpdate(schemas.BaseUserUpdate):
-    email: str
-    display_name: EmailStr
+    email: EmailStr
+    display_name: str
     first_name: Optional[str]
     last_name: Optional[str]
     is_active: bool
@@ -56,6 +58,24 @@ class SUser(SUserCreate):
     background: Optional[str]
     spotlight: Optional[str]
 
+
+class SUserProfile(BaseModel):
+    id: int
+
+    display_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    is_public: bool
+
+    city: Optional[str]
+    bio: Optional[str]
+
+    url: Optional[str]
+    avatar: Optional[str]
+    background: Optional[str]
+    spotlight: Optional[str]
+
+
 class SUserRead(schemas.BaseUser[int]):
     id: int
 
@@ -70,22 +90,6 @@ class SUserRead(schemas.BaseUser[int]):
     is_public: bool
 
     role_id: int
-
-    city: Optional[str]
-    bio: Optional[str]
-
-    url: Optional[str]
-    avatar: Optional[str]
-    background: Optional[str]
-    spotlight: Optional[str]
-
-class SUserProfile(BaseModel):
-    id: int
-
-    display_name: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    is_public: bool
 
     city: Optional[str]
     bio: Optional[str]

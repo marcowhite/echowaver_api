@@ -1,4 +1,5 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete, and_
+from sqlalchemy.orm import joinedload
 
 from database.connection import new_session
 from database.models.user import UserRoleTable, UserTable
@@ -59,21 +60,52 @@ class UserFollowRepository:
             await session.flush()
             await session.commit()
             return user_follow
+    @classmethod
+    async def delete_by_id(cls, user_id: int, following_id: int):
+        async with new_session() as session:
+            await session.flush()
+            query = delete(UserFollowTable).where(
+                and_(
+                    UserFollowTable.user_id == user_id,
+                    UserFollowTable.following_id == following_id)
+            )
+            result = await session.execute(query)
+            await session.flush()
+            await session.commit()
+            return result
 
     @classmethod
-    async def find_all_follows(cls, user_id: int):
+    async def find_all_follows(cls, user_id: int) -> list[SUserProfile]:
         async with new_session() as session:
-            query = select(UserFollowTable).filter(UserFollowTable.user_id == user_id)
+            query = (
+                select(UserFollowTable)
+                .filter(UserFollowTable.user_id == user_id)
+                .options(joinedload(UserFollowTable.following_user))
+            )
             result = await session.execute(query)
             user_follow_models = result.scalars().all()
-            #user_role_schema = SUserRole.model_validate(jsonable_encoder(user_role_model))
-            return user_follow_models
+
+            # Получаем все профили пользователей, на которых подписан user_id
+            user_models = [follow.following_user for follow in user_follow_models]
+
+            # Преобразуем их в схему SUserProfile
+            user_schemas = [SUserProfile.model_validate(jsonable_encoder(user)) for user in user_models]
+            return user_schemas
 
     @classmethod
-    async def find_all_followers(cls, following_id: int):
+    async def find_all_followers(cls, following_id: int) -> list[SUserProfile]:
         async with new_session() as session:
-            query = select(UserFollowTable).filter(UserFollowTable.following_id == following_id)
+            query = (
+                select(UserFollowTable)
+                .filter(UserFollowTable.following_id == following_id)
+                .options(joinedload(UserFollowTable.user))
+            )
             result = await session.execute(query)
             user_follow_models = result.scalars().all()
-            #user_role_schema = SUserRole.model_validate(jsonable_encoder(user_role_model))
-            return user_follow_models
+
+            # Получаем все профили пользователей, которые подписаны на following_id
+            user_models = [follow.user for follow in user_follow_models]
+
+            # Преобразуем их в схему SUserProfile
+            user_schemas = [SUserProfile.model_validate(jsonable_encoder(user)) for user in user_models]
+            return user_schemas

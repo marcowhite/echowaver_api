@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, status, Depends, APIRouter, HTTPException
 from auth.auth import auth_backend
 from database.models import UserTable
 from auth.manager import get_user_manager
-from schemas.user import SUserRead, SUserCreate, SUserUpdate
+from schemas.user import SUserRead, SUserCreate, SUserUpdate, SUserProfile
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -47,19 +47,27 @@ async def follow_user_by_id(id: int, user: UserTable = Depends(current_user)):
         result = await UserFollowRepository.add_one(user_id=user.id, following_id=id)
         return result
 
+@router.delete("/unfollow/{id}")
+async def unfollow_user_by_id(id: int, user: UserTable = Depends(current_user)):
+    if user.id == id:
+        raise HTTPException(status_code=403, detail="Can't unfollow yourself")
+    else:
+        result = await UserFollowRepository.delete_by_id(user_id=user.id, following_id=id)
+        return result
+
 @router.get("/profile/{id}")
 async def get_user_profile(id: int, user: UserTable = Depends(current_user)):
     user_profile = await UserProfileRepository.find_by_id(id)
     return user_profile
 
 @router.get("/followers/{id}")
-async def get_user_followers(id: int, user: UserTable = Depends(current_user)):
+async def get_user_followers(id: int, user: UserTable = Depends(current_user)) -> list[SUserProfile]:
     user_followers = await UserFollowRepository.find_all_followers(id)
     return user_followers
 
 
 @router.get("/follows/{id}")
-async def get_user_follows(id: int, user: UserTable = Depends(current_user)):
+async def get_user_follows(id: int, user: UserTable = Depends(current_user)) -> list[SUserProfile]:
     user_followings = await UserFollowRepository.find_all_follows(id)
     return user_followings
 

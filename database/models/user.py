@@ -48,6 +48,17 @@ class UserTable(SQLAlchemyBaseUserTable[int], Model, DatedMixin):
     #     secondaryjoin=lambda: UserTable.id == user_following.c.following_id,
     #     backref='followers'
     # )
+    followers = relationship(
+        'UserFollowTable',
+        foreign_keys='UserFollowTable.following_id',
+        back_populates='following_user'
+    )
+
+    followings = relationship(
+        'UserFollowTable',
+        foreign_keys='UserFollowTable.user_id',
+        back_populates='user'
+    )
 
 class UserFollowTable(Model):
     __tablename__ = 'user_following'
@@ -55,6 +66,8 @@ class UserFollowTable(Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
     following_id: Mapped[int] = mapped_column(ForeignKey('user.id'), primary_key=True)
 
+    user = relationship('UserTable', foreign_keys=[user_id], back_populates='followings')
+    following_user = relationship('UserTable', foreign_keys=[following_id], back_populates='followers')
 # user_following = Table(
 #     'user_following', Model.metadata,
 #     Column('user_id', Integer, ForeignKey(UserTable.id), primary_key=True),

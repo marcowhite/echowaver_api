@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+import base64
+
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from fastapi import Depends
 from typing_extensions import Annotated
 
@@ -7,14 +9,16 @@ from repositories.song import SongTagRepository, SongRepository, SongListenRepos
 from routers.file import upload_audio, upload_image
 from routers.user import fastapi_users
 from schemas.song import SSongTagAdd, SSongTag, SSong, SSongAdd, SSongListenAdd, SSongListen
+from typing import BinaryIO
+import io
+
 
 router = APIRouter(
     prefix='/song',
-    tags=['Songs']
+    tags=['Songs'],
 )
 
 current_user = fastapi_users.current_user()
-
 
 @router.post("")
 async def add_song(
@@ -23,17 +27,30 @@ async def add_song(
         image_file: UploadFile = File(...),
         user: UserTable = Depends(current_user)
 ):
+    print(audio_file)
+    print(image_file)
     try:
         audio_responce = await upload_audio(audio_file)
         image_responce = await upload_image(image_file)
     except Exception as e:
+        print(e)
         raise e
 
     song_id = await SongRepository.add_one(song, user_id=user.id, audio_file=audio_responce['message'],
                                            cover_file=image_responce['message'])
 
     return {'response': True, 'song_id': song_id}
+@router.post("/with_preupload/")
+async def add_song(
+        song: Annotated[SSongAdd, Depends()],
+        audio_file: str,
+        image_file: str,
+        user: UserTable = Depends(current_user)
+):
+    song_id = await SongRepository.add_one(song, user_id=user.id, audio_file=audio_file,
+                                           cover_file=image_file)
 
+    return {'response': True, 'song_id': song_id}
 
 @router.get("/{id}")
 async def get_song_by_id(
