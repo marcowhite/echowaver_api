@@ -16,7 +16,7 @@ router = APIRouter(
 current_user = fastapi_users.current_user()
 
 
-@router.post("/song/like/{id}")
+@router.post("/song/like/{liked_id}")
 async def like_song(liked_id: int, user: UserTable = Depends(current_user)):
     song = await SongRepository.find_by_id(liked_id)
     if song.is_public or song.user_id == user.id:
@@ -26,13 +26,13 @@ async def like_song(liked_id: int, user: UserTable = Depends(current_user)):
         raise HTTPException(status_code=403, detail="You are not authorized to like this song")
 
 
-@router.delete("/song/like/{id}")
+@router.delete("/song/like/{liked_id}")
 async def unlike_song(liked_id: int, user: UserTable = Depends(current_user)):
     song_like = await LikeRepository.unlike_song(liked_id=liked_id, liker_id=user.id)
     return song_like
 
 
-@router.post("/album/like/{id}")
+@router.post("/album/like/{liked_id}")
 async def like_album(liked_id: int, user: UserTable = Depends(current_user)):
     album = await AlbumRepository.find_by_id(liked_id)
     if album.is_public or album.user_id == user.id:
@@ -42,7 +42,7 @@ async def like_album(liked_id: int, user: UserTable = Depends(current_user)):
         raise HTTPException(status_code=403, detail="You are not authorized to like this album")
 
 
-@router.delete("/album/like/{id}")
+@router.delete("/album/like/{liked_id}")
 async def unlike_album(liked_id: int, user: UserTable = Depends(current_user)):
     album_like = await LikeRepository.unlike_album(liked_id=liked_id, liker_id=user.id)
     return album_like
@@ -52,7 +52,7 @@ async def get_song_likes_by_id(id: int, user: UserTable = Depends(current_user))
     return song_likes
 
 
-@router.post("/song/repost/{id}")
+@router.post("/song/repost/{reposted_id}")
 async def repost_song(reposted_id: int, user: UserTable = Depends(current_user)):
     song = await SongRepository.find_by_id(reposted_id)
     if song.is_public or song.user_id == user.id:
@@ -61,7 +61,7 @@ async def repost_song(reposted_id: int, user: UserTable = Depends(current_user))
     else:
         raise HTTPException(status_code=403, detail="You are not authorized to repost this song")
 
-@router.post("/album/repost/{id}")
+@router.post("/album/repost/{reposted_id}")
 async def repost_album(reposted_id: int, user: UserTable = Depends(current_user)):
     album = await AlbumRepository.find_by_id(reposted_id)
     if album.is_public or album.user_id == user.id:
@@ -71,13 +71,13 @@ async def repost_album(reposted_id: int, user: UserTable = Depends(current_user)
         raise HTTPException(status_code=403, detail="You are not authorized to repost this album")
 
 
-@router.delete("/song/repost/{id}")
+@router.delete("/song/repost/{reposted_id}")
 async def unrepost_song(reposted_id: int, user: UserTable = Depends(current_user)):
     song_repost = await RepostRepository.unrepost_song(reposter_id=user.id, reposted_id=reposted_id)
     return song_repost
 
 
-@router.delete("/album/repost/{id}")
+@router.delete("/album/repost/{reposted_id}")
 async def unrepost_album(reposted_id: int, user: UserTable = Depends(current_user)):
     album_repost = await RepostRepository.unrepost_album(reposter_id=user.id, reposted_id=reposted_id)
     return album_repost

@@ -40,9 +40,31 @@ async def add_song(
                                            cover_file=image_responce['message'])
 
     return {'response': True, 'song_id': song_id}
+
+@router.post("/form/")
+async def add_song(
+        song: SSongAdd,
+        audio_file: UploadFile = File(...),
+        image_file: UploadFile = File(...),
+        user: UserTable = Depends(current_user)
+):
+    print(audio_file)
+    print(image_file)
+    try:
+        audio_responce = await upload_audio(audio_file)
+        image_responce = await upload_image(image_file)
+    except Exception as e:
+        print(e)
+        raise e
+
+    song_id = await SongRepository.add_one(song, user_id=user.id, audio_file=audio_responce['message'],
+                                           cover_file=image_responce['message'])
+
+    return {'response': True, 'song_id': song_id}
+
 @router.post("/with_preupload/")
 async def add_song(
-        song: Annotated[SSongAdd, Depends()],
+        song: SSongAdd,
         audio_file: str,
         image_file: str,
         user: UserTable = Depends(current_user)

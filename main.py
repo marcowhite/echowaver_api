@@ -51,7 +51,7 @@ app.add_middleware(
 
 
 
-# logging.basicConfig(filename='info.log', level=logging.DEBUG)
+# logging.basicConfig(filename='info2.log', level=logging.DEBUG)
 # async def log_info(req_body, res_body):
 #     logging.info(req_body)
 #     logging.info(res_body)
@@ -80,3 +80,4 @@ app.include_router(song_router)
 app.include_router(user_router)
 app.include_router(file_router)
 app.include_router(interactions_router)
+

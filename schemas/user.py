@@ -23,9 +23,6 @@ class SUserUpdate(schemas.BaseUserUpdate):
     display_name: str
     first_name: Optional[str]
     last_name: Optional[str]
-    is_active: bool
-    is_superuser: bool
-    is_verified: bool
     is_public: bool
 
     city: Optional[str]
